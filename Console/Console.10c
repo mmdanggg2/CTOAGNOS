@@ -1,0 +1,238 @@
+;-----	Start Sequence	-----
+jsr dev_find
+jsr screen_init
+set pc, console
+
+;-----	Boot	-----
+:dev_find	;find devs
+set push, j
+set push, i
+set push, a
+hwn i
+set j, 0x0000
+jsr dev_find_loop
+set a, pop
+set i, pop
+set j, pop
+set pc, pop
+:dev_find_loop
+hwq j
+ife b, 0x7349
+ife a, 0xf615	;Screen
+	set [dev_screen], j
+ife b, 0x30cf
+ife a, 0x7406	;Keyboard
+	set [dev_keyboard], j
+ife b, 0x12d0
+ife a, 0xb402	;Clock
+	set [dev_clock], j
+ife b, 0x42ba
+ife a, 0xbf3c	;Vector Display
+	set [dev_vector], j
+ife b, 0x4fd5
+ife a, 0x24c5	;Floppy Drive
+	set [dev_fdd], j
+ife j, i
+	set pc, pop
+add j, 1
+set pc, dev_find_loop
+
+:screen_init	;init desplay
+set push, a
+set push, b
+set a, 0
+set b, [screen_loc]
+hwi [dev_screen]
+set a, 1
+set b, sys_font
+hwi [dev_screen]
+set a, 2
+set b, sys_colour
+hwi [dev_screen]
+jsr border_colour
+set [colour_text], 0x7000
+set b, pop
+set a, pop
+set pc, pop
+
+;-----	Console -----
+:console ;For later inits
+set sp, 0x0000
+set push, a
+
+set [colour_text], [colour_text_user]
+
+set [char_x_start], 0x0001
+set [con_cmd_pos], 0x0000
+jsr console_clear_cmd
+jsr clear_screen
+
+set [char_x], 0x0000
+set [char_y], 0x0000
+set a, intro_text
+jsr draw_string
+
+set [char_x], 0x0000
+set [char_y], 0x0001
+jsr draw_cmd_line
+set pc, console_loop
+
+:console_loop
+jsr key_inp
+ifn c, 0x0000	;if input
+	set pc, console_inp
+set pc, console_loop
+
+:console_new_cmd
+jsr char_next_line
+set [char_x], 0x0000
+set [con_cmd_pos], 0x0000
+jsr console_clear_cmd
+jsr draw_cmd_line
+set pc, console_loop
+
+;-- Input Handling --
+
+:console_inp
+ife c, 0x0010
+	set pc, console_bksp	;Backspace
+ife c, 0x0011
+	set pc, console_return	;Return
+ife c, 0x0012
+	set pc, console_insert	;Insert
+ife c, 0x0013
+	set pc, console_delete	;Delete
+set pc, console_char	;Other
+
+:console_bksp
+ife [char_x], [char_x_start]
+	set pc, console_loop
+jsr draw_blank
+sub [char_x], 0x0001
+jsr draw_cur
+set push, i
+ifn [con_cmd_pos], 0x0000
+	sub [con_cmd_pos], 0x0001
+set i, [con_cmd_pos]
+set [con_cmd+i], 0x0000
+set i, pop
+set pc, console_loop
+
+:console_return
+jsr draw_blank
+set pc, console_cmd_read
+set pc, console_new_cmd
+
+:console_insert
+set push, a
+set a, con_cmd
+jsr draw_string
+jsr draw_cur
+set a, pop
+set pc, console_loop
+
+:console_delete
+set push, c
+set c, 0x0000
+jsr draw_char
+jsr char_next
+set c, pop
+set pc, console_loop
+
+;-- Character Handling --
+
+:console_char
+set push, [colour_cur]
+jsr draw_char
+jsr char_next
+ife [char_x], 0x001F
+	set [colour_cur], 0xC000
+jsr console_cmd_in
+jsr draw_cur
+set [colour_cur], pop
+set pc, console_loop
+
+:console_cmd_in
+ife [con_cmd_pos], 0x001E
+	set pc, pop
+set push, i
+set i, [con_cmd_pos]
+set [con_cmd+i], c
+add [con_cmd_pos], 0x0001
+set i, pop
+set pc, pop
+
+;-- Command Reading --
+
+:console_cmd_read
+ife [con_cmd_pos], 0x0000
+	set pc, console_new_cmd
+set push, i
+set push, a
+set push, b
+set i, 0x0000
+:console_cmd_read_loop
+ife [cmd_list+i], 0x0000
+	set pc, console_cmd_read_none
+set a, [cmd_list+i]
+set b, con_cmd
+jsr cmp_string
+ife z, 0x0001
+	set pc, console_cmd_read_match
+add i, 0x0001
+set pc, console_cmd_read_loop
+:console_cmd_read_none
+set b, pop
+set a, pop
+set i, pop
+set push, a
+jsr char_next_line
+set [char_x], 0x0000
+set a, not_cmd
+jsr draw_string
+set a, pop
+set pc, console_new_cmd
+:console_cmd_read_match
+set b, pop
+set a, pop
+set [null], pop
+jsr console_clear_cmd
+set [con_cmd_pos], 0x0000
+set pc, [cmd_list_addr+i]
+
+:console_clear_cmd
+set push, i
+set push, j
+set i, con_cmd
+set j, i
+add j, 0x001E
+:console_clear_cmd_loop
+set [i], 0x0000
+set [i+0x0001], 0x0000
+set [i+0x0002], 0x0000
+add i, 0x0003
+ifn i, j
+	set pc, console_clear_cmd_loop
+set j, pop
+set i, pop
+set pc, pop
+
+;-- End loop --
+
+:end
+set [char_x], 0
+set [char_y], 0
+set a, secret
+set i, 0x0000
+set j, 0x0000
+:end_loop
+add i, 0x0001
+ife i, 0xFFFF
+	add j, 0x0001
+ife j, 0x0004
+	jsr draw_string
+ife j, 0x0004
+	set pc, end_end
+set pc, end_loop
+:end_end
+sub pc, 0x0001

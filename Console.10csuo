@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<solution name="Console" path="C:\Users\New User\Documents\0x10c Devkit\Console\Console.10csln" currentFile="Console\Console.10c">
+  <openFiles>
+    <file path="Console\Console.10c" />
+    <file path="Console\Functions.10c" />
+    <file path="Console\OSCommands.10c" />
+    <file path="Console\Data.10c" />
+  </openFiles>
+</solution>

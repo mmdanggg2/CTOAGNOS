@@ -1,0 +1,116 @@
+:prog_clear
+jsr clear_screen
+set [char_x], 0x0000
+set [char_y], 0x0000
+jsr draw_cmd_line
+set pc, console_loop
+
+
+
+:restart
+set a, 0x0000
+set b, 0x0000
+set c, 0x0000
+set x, 0x0000
+set y, 0x0000
+set z, 0x0000
+set i, 0x0000
+set j, 0x0000
+set sp, 0x0000
+set pc, 0x0000
+
+
+
+:shutdown
+jsr clear_screen
+set [char_x], 0x000C
+set [char_y], 0x0004
+jsr draw_logo
+set pc, end
+
+
+
+:help
+set push, a
+set push, c
+set push, i
+set push, z
+set push, [char_x_start]
+set [char_x_start], 0x0000
+jsr char_next_line
+set z, 0xAAAA
+set i, 0x0000
+set c, 0x002C
+ife [cmd_list+i], 0x0000
+	set pc, help_end
+set a, [cmd_list+i]
+jsr draw_string
+add i, 0x0001
+:help_loop
+ife [cmd_list+i], 0x0000
+	set pc, help_end
+jsr draw_char
+jsr char_next
+jsr draw_blank
+jsr char_next
+set a, [cmd_list+i]
+jsr draw_string
+add i, 0x0001
+set pc, help_loop
+:help_end
+set [char_x_start], pop
+set z, pop
+set i, pop
+set c, pop
+set a, pop
+set pc, console_new_cmd
+
+
+:txtcolour
+set push, a
+set push, i
+set push, j
+set push, [char_x_start]
+set [char_x_start], 0x0000
+jsr char_next_line
+set a, colour_desc
+jsr draw_string
+jsr char_next_line
+jsr draw_colours
+ife c, 0x0000
+	set pc, txtcolour_end
+mul c, 0x1000
+set [colour_text_user], c
+set [colour_text], c
+:txtcolour_end
+set [char_x_start], pop
+set j, pop
+set i, pop
+set a, pop
+set pc, console_new_cmd
+
+:about
+set push, a
+set push, [char_x_start]
+set push, [colour_text]
+set [char_x_start], 0x0000
+jsr char_next_line
+jsr char_next_line
+set a, about1
+jsr draw_string
+jsr char_next_line
+set a, about2
+jsr draw_string
+jsr char_next_line
+set a, about3
+jsr draw_string
+jsr char_next_line
+set a, about4
+jsr draw_string
+set [colour_text], 0x1000
+set a, about4_2
+jsr draw_string
+set [colour_text], pop
+set [char_x_start], pop
+set a, pop
+set pc, console_new_cmd

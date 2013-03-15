@@ -1,0 +1,13 @@
+:program_calculator
+set push, a
+set push, b
+set push, c
+set push, i
+set push, j
+:program_calculator_end
+set j, pop
+set i, pop
+set c, pop
+set b, pop
+set a, pop
+set pc, console_new_cmd
