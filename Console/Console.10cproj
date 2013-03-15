@@ -1,8 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<project version="1.7.5" type="code">
+<project version="1.7.6" type="code">
   <name>Console</name>
   <properties>
-    <property name="code.generateBinaryOutput">true</property>
+    <property name="code.generateBinaryOutput">false</property>
     <property name="code.binaryOutputFilename">Console.bin</property>
     <property name="code.generateHexOutput">false</property>
     <property name="code.hexOutputFilename">Console.hex</property>

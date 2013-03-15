@@ -63,7 +63,7 @@ dat colour_9, colour_a, colour_b, colour_c, colour_d, colour_e, colour_f, 0x0000
 :cmd_colour dat "txtcolour", 0x0000
 :cmd_clear dat "clear", 0x0000
 :cmd_restart dat "restart", 0x0000
-:cmd_test dat "t", 0x0000
+:cmd_test dat "test", 0x0000
 :cmd_shutdown dat "shutdown", 0x0000
 :prog_painter dat "painter", 0x0000
 :prog_calc dat "calc", 0x0000
