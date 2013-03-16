@@ -49,6 +49,7 @@ dat colour_9, colour_a, colour_b, colour_c, colour_d, colour_e, colour_f, 0x0000
 :colour_d dat "d.Purple", 0x0000
 :colour_e dat "e.Yellow", 0x0000
 :colour_f dat "f.White", 0x0000
+:colour_input dat "Number or letter:", 0x0000
 
 :about1 dat "CTOAGNOS Ver 3", 0x0000
 :about2 dat "Couldn't Think Of A Good Name OS", 0x0000

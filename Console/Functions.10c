@@ -271,7 +271,7 @@ set pc, draw_colours_loop1
 set [colour_text], [colour_text_user]
 jsr char_next_line
 set [char_x], 0x0000
-set a, new_cmd
+set a, colour_input
 jsr draw_string
 jsr draw_cur
 
