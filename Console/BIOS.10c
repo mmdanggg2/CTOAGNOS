@@ -1,7 +1,7 @@
 ;-----	Start Sequence	-----
 jsr dev_find
 jsr screen_init
-set pc, console
+set pc, os
 
 ;-----	Boot	-----
 :dev_find	;find devs
@@ -54,3 +54,10 @@ set [colour_text], 0x7000
 set b, pop
 set a, pop
 set pc, pop
+
+
+:end
+sub pc, 0x0001
+
+:os
+set pc, console

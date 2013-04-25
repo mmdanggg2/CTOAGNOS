@@ -4,6 +4,8 @@ set sp, 0x0000
 set push, a
 
 set [colour_text], [colour_text_user]
+set [colour_border], [colour_border_user]
+jsr border_colour
 
 set [char_x_start], 0x0001
 set [con_cmd_pos], 0x0000
@@ -18,6 +20,8 @@ jsr draw_string
 set [char_x], 0x0000
 set [char_y], 0x0001
 jsr draw_cmd_line
+
+set a, pop
 set pc, console_loop
 
 :console_loop
@@ -96,7 +100,7 @@ set [colour_cur], pop
 set pc, console_loop
 
 :console_cmd_in
-ife [con_cmd_pos], 0x001E
+ife [con_cmd_pos], [con_cmd_len]
 	set pc, pop
 set push, i
 set i, [con_cmd_pos]
@@ -148,7 +152,7 @@ set push, i
 set push, j
 set i, con_cmd
 set j, i
-add j, 0x001E
+add j, [con_cmd_len]
 :console_clear_cmd_loop
 set [i], 0x0000
 set [i+0x0001], 0x0000
@@ -162,20 +166,18 @@ set pc, pop
 
 ;-- End loop --
 
-:end
+:end_secret
 set [char_x], 0
 set [char_y], 0
 set a, secret
 set i, 0x0000
 set j, 0x0000
-:end_loop
+:end_secret_loop
 add i, 0x0001
 ife i, 0xFFFF
 	add j, 0x0001
 ife j, 0x0004
 	jsr draw_string
 ife j, 0x0004
-	set pc, end_end
-set pc, end_loop
-:end_end
-sub pc, 0x0001
+	set pc, end
+set pc, end_secret_loop

@@ -1,4 +1,4 @@
-:prog_clear
+:clear
 jsr clear_screen
 set [char_x], 0x0000
 set [char_y], 0x0000
@@ -23,10 +23,12 @@ set pc, 0x0000
 
 :shutdown
 jsr clear_screen
+set [colour_border], 0x0000
+jsr border_colour
 set [char_x], 0x000C
 set [char_y], 0x0004
 jsr draw_logo
-set pc, end
+set pc, end_secret
 
 
 
@@ -68,16 +70,17 @@ set pc, console_new_cmd
 
 :txtcolour
 set push, a
+set push, c
 set push, i
 set push, j
 set push, [char_x_start]
 set [char_x_start], 0x0000
 jsr char_next_line
-set a, colour_desc
+set a, colour_text_desc
 jsr draw_string
 jsr char_next_line
-jsr draw_colours
-ife c, 0x0000
+jsr colour_choices
+ife c, 0xffff
 	set pc, txtcolour_end
 mul c, 0x1000
 set [colour_text_user], c
@@ -86,6 +89,32 @@ set [colour_text], c
 set [char_x_start], pop
 set j, pop
 set i, pop
+set c, pop
+set a, pop
+set pc, console_new_cmd
+
+:bordcolour
+set push, a
+set push, c
+set push, i
+set push, j
+set push, [char_x_start]
+set [char_x_start], 0x0000
+jsr char_next_line
+set a, colour_border_desc
+jsr draw_string
+jsr char_next_line
+jsr colour_choices
+ife c, 0xffff
+	set pc, bordcolour_end
+set [colour_border_user], c
+set [colour_border], c
+:bordcolour_end
+jsr border_colour
+set [char_x_start], pop
+set j, pop
+set i, pop
+set c, pop
 set a, pop
 set pc, console_new_cmd
 

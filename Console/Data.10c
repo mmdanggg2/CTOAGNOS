@@ -10,6 +10,7 @@
 :colour_text dat 0x7000
 :colour_text_user dat 0x7000
 :colour_border dat 0x0000
+:colour_border_user dat 0x0000
 :style_cur dat 0x009F
 :colour_cur dat 0x7000
 :draw_type dat 0x0000
@@ -21,6 +22,7 @@
 ;-	Typed Chars	-
 :con_cmd reserve 0x001E 
 dat 0x0000
+:con_cmd_len dat 0x001E
 :con_cmd_pos dat 0x0000
 :vec_mem dat 0x9000
 
@@ -31,16 +33,18 @@ dat 0x0000
 :test_text dat "Watch my vids on YouTube! =)", 0x0000
 :secret dat "What were you expecting, a pie?", 0x0000
 
-:colour_desc dat "Choose the text colour.", 0x0000
-:colour_list dat colour_1, colour_2, colour_3, colour_4, colour_5, colour_6, colour_7, colour_8
+:colour_text_desc dat "Choose the text colour.", 0x0000
+:colour_border_desc dat "Choose the border colour.", 0x0000
+:colour_list dat colour_0, colour_1, colour_2, colour_3, colour_4, colour_5, colour_6, colour_7, colour_8
 dat colour_9, colour_a, colour_b, colour_c, colour_d, colour_e, colour_f, 0x0000
+:colour_0 dat "0.Black", 0x0000
 :colour_1 dat "1.Dark Blue", 0x0000
 :colour_2 dat "2.Dark Green", 0x0000
 :colour_3 dat "3.Dark Cyan", 0x0000
 :colour_4 dat "4.Dark Red", 0x0000
 :colour_5 dat "5.Dark Pruple", 0x0000
 :colour_6 dat "6.Brown", 0x0000
-:colour_7 dat "7.Grey (Defualt)", 0x0000
+:colour_7 dat "7.Grey", 0x0000
 :colour_8 dat "8.Dark Grey", 0x0000
 :colour_9 dat "9.Blue", 0x0000
 :colour_a dat "a.Green", 0x0000
@@ -49,7 +53,7 @@ dat colour_9, colour_a, colour_b, colour_c, colour_d, colour_e, colour_f, 0x0000
 :colour_d dat "d.Purple", 0x0000
 :colour_e dat "e.Yellow", 0x0000
 :colour_f dat "f.White", 0x0000
-:colour_input dat "Number or letter:", 0x0000
+:colour_input dat "Number or letter>", 0x0000
 
 :about1 dat "CTOAGNOS Ver 3", 0x0000
 :about2 dat "Couldn't Think Of A Good Name OS", 0x0000
@@ -58,10 +62,11 @@ dat colour_9, colour_a, colour_b, colour_c, colour_d, colour_e, colour_f, 0x0000
 :about4_2 dat "mmdanggg2", 0x0000
 
 ;-----	Commands	-----
-:cmd_list dat cmd_help, cmd_about, cmd_colour, cmd_clear, cmd_restart, cmd_test, cmd_shutdown, prog_painter, prog_calc, 0x0000
+:cmd_list dat cmd_help, cmd_about, cmd_txtcolour, cmd_bordcolour, cmd_clear, cmd_restart, cmd_test, cmd_shutdown, prog_painter, prog_calc, 0x0000
 :cmd_help dat "help", 0x0000
 :cmd_about dat "about", 0x0000
-:cmd_colour dat "txtcolour", 0x0000
+:cmd_txtcolour dat "txtcolour", 0x0000
+:cmd_bordcolour dat "bordercolour", 0x0000
 :cmd_clear dat "clear", 0x0000
 :cmd_restart dat "restart", 0x0000
 :cmd_test dat "test", 0x0000
@@ -69,7 +74,7 @@ dat colour_9, colour_a, colour_b, colour_c, colour_d, colour_e, colour_f, 0x0000
 :prog_painter dat "painter", 0x0000
 :prog_calc dat "calc", 0x0000
 
-:cmd_list_addr dat help, about, txtcolour, prog_clear, restart, test, shutdown, program_painter, program_calculator, 0x0000
+:cmd_list_addr dat help, about, txtcolour, bordcolour, clear, restart, test, shutdown, program_painter, program_calculator, 0x0000
 
 :null dat 0x0000
 

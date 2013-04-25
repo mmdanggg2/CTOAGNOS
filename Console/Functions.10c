@@ -50,11 +50,18 @@ set push, i
 set push, j
 set i, 0x0000
 set j, [screen_loc]
-set [j], [j+0x0020]
+;set [j], [j+0x0020]
 :scroll_up_loop
-add j, 0x0001
 set [j], [j+0x0020]
-add i, 0x0001
+set [j+0x0001], [j+0x0021]
+set [j+0x0002], [j+0x0022]
+set [j+0x0003], [j+0x0023]
+set [j+0x0004], [j+0x0024]
+set [j+0x0005], [j+0x0025]
+set [j+0x0006], [j+0x0026]
+set [j+0x0007], [j+0x0027]
+add j, 0x0008
+add i, 0x0008
 ifn i, 0x0180
 	set pc, scroll_up_loop
 :scroll_up_end
@@ -241,23 +248,25 @@ set pc, pop
 
 
 
-;-----	Draw Colours	------
+;-----	Colour Choice	------
 ;-	draws all the colours
-:draw_colours
+;-	returns user choice on C
+;-	returns 0xffff if none chosen
+:colour_choices
 set push, a
 set push, i
 set i, 0x0000
-set [colour_text], 0x1000
+set [colour_text], 0x0000
 
-:draw_colours_loop1
+:colour_choices_loop1
 ife [colour_list+i], 0x0000
-	set pc, draw_colours_loop1_end
+	set pc, colour_choices_loop1_end
 set a, [colour_list+i]
 set [char_x], 0x0000
 jsr draw_string
 add i, 0x0001
 ife [colour_list+i], 0x0000
-	set pc, draw_colours_loop1_end
+	set pc, colour_choices_loop1_end
 set a, [colour_list+i]
 add [colour_text], 0x1000
 set [char_x], 0x0012
@@ -265,9 +274,9 @@ jsr draw_string
 add i, 0x0001
 jsr char_next_line
 add [colour_text], 0x1000
-set pc, draw_colours_loop1
+set pc, colour_choices_loop1
 
-:draw_colours_loop1_end
+:colour_choices_loop1_end
 set [colour_text], [colour_text_user]
 jsr char_next_line
 set [char_x], 0x0000
@@ -275,19 +284,19 @@ set a, colour_input
 jsr draw_string
 jsr draw_cur
 
-:draw_colours_loop2
+:colour_choices_loop2
 jsr key_inp
 ifl c, 0x003A
-ifg c, 0x0030
-	set pc, draw_colours_num_inp
+ifg c, 0x002F
+	set pc, colour_choices_num_inp
 ifl c, 0x0067
 ifg c, 0x0060
-	set pc, draw_colours_hex_inp
+	set pc, colour_choices_hex_inp
 ife c, 0x0011
-	set pc, draw_colours_no_inp
-set pc, draw_colours_loop2
+	set pc, colour_choices_no_inp
+set pc, colour_choices_loop2
 
-:draw_colours_hex_inp
+:colour_choices_hex_inp
 jsr draw_char
 sub c, 0x0060
 add c, 0x0009
@@ -295,16 +304,16 @@ set i, pop
 set a, pop
 set pc, pop
 
-:draw_colours_num_inp
+:colour_choices_num_inp
 jsr draw_char
 sub c, 0x0030
 set i, pop
 set a, pop
 set pc, pop
 
-:draw_colours_no_inp
+:colour_choices_no_inp
 jsr draw_blank
-set c, 0x0000
+set c, 0xffff
 set i, pop
 set a, pop
 set pc, pop
