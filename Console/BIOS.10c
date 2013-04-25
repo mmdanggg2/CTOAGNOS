@@ -1,0 +1,56 @@
+;-----	Start Sequence	-----
+jsr dev_find
+jsr screen_init
+set pc, console
+
+;-----	Boot	-----
+:dev_find	;find devs
+set push, j
+set push, i
+set push, a
+hwn i
+set j, 0x0000
+jsr dev_find_loop
+set a, pop
+set i, pop
+set j, pop
+set pc, pop
+:dev_find_loop
+hwq j
+ife b, 0x7349
+ife a, 0xf615	;Screen
+	set [dev_screen], j
+ife b, 0x30cf
+ife a, 0x7406	;Keyboard
+	set [dev_keyboard], j
+ife b, 0x12d0
+ife a, 0xb402	;Clock
+	set [dev_clock], j
+ife b, 0x42ba
+ife a, 0xbf3c	;Vector Display
+	set [dev_vector], j
+ife b, 0x4fd5
+ife a, 0x24c5	;Floppy Drive
+	set [dev_fdd], j
+ife j, i
+	set pc, pop
+add j, 1
+set pc, dev_find_loop
+
+:screen_init	;init desplay
+set push, a
+set push, b
+set a, 0
+set b, [screen_loc]
+hwi [dev_screen]
+set a, 1
+set b, sys_font
+hwi [dev_screen]
+set a, 2
+set b, sys_colour
+hwi [dev_screen]
+jsr border_colour
+set [colour_text], 0x7000
+set b, pop
+set a, pop
+set pc, pop

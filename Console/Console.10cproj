@@ -7,10 +7,11 @@
     <property name="code.generateHexOutput">false</property>
     <property name="code.hexOutputFilename">Console.hex</property>
     <property name="code.setFirstFile">True</property>
-    <property name="code.firstFile">Console.10c</property>
+    <property name="code.firstFile">BIOS.10c</property>
   </properties>
   <references />
   <files>
+	<file path="BIOS.10c" />
     <file path="Console.10c" />
     <file path="Functions.10c" />
     <file path="OSCommands.10c" />
