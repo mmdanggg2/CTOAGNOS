@@ -19,5 +19,6 @@
     <file path="Test.10c" />
     <file path="Painter.10c" />
     <file path="Calculator.10c" />
+    <file path="Logo.10c" />
   </files>
 </project>
