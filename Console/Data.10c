@@ -20,7 +20,8 @@
 :char_offset dat 0x0000
 :char_x_start dat 0x0001
 ;-	Typed Chars	-
-:con_cmd reserve 0x001E 
+:con_cmd 
+reserve 0x001E 
 dat 0x0000
 :con_cmd_len dat 0x001E
 :con_cmd_pos dat 0x0000

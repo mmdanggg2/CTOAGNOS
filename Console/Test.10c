@@ -1,2 +1,31 @@
 :test
+jsr char_next_line
+set a, enter_test_text
+jsr draw_string
+;jsr char_next_line
+set a, 0x0002
+set x, 0x0000
+set y, startfreemem
+hwi [dev_fdd]
+set a, 0x0000
+set b, 0x0000
+set c, 0x0000
+hwi [dev_fdd]
 set pc, console_new_cmd
+
+set a, 0x0000
+:testloop
+set [startfreemem + a], a
+add a, 0x0001
+ife a, 512
+	set pc, test_end
+set pc, testloop
+:test_end
+set a, 0x0003
+set x, 0x0000
+set y, startfreemem
+hwi [dev_fdd]
+set pc, console_new_cmd
+
+:enter_test_text
+dat "--------Entering test!---------", 0x0000
