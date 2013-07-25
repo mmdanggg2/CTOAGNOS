@@ -1,21 +1,29 @@
 ;-----	Start Sequence	-----
-jsr dev_find
-jsr screen_init
+jsr boot_dev_find
+jsr boot_screen_init
+jsr boot_stats
 set pc, os
 
+;-----	Device IDs	-----
+:dev_screen dat 0xffff
+:dev_keyboard dat 0xffff
+:dev_clock dat 0xffff
+:dev_vector dat 0xffff
+:dev_fdd dat 0xffff
+
 ;-----	Boot	-----
-:dev_find	;find devs
+:boot_dev_find	;find devs
 set push, j
 set push, i
 set push, a
 hwn i
 set j, 0x0000
-jsr dev_find_loop
+jsr boot_dev_find_loop
 set a, pop
 set i, pop
 set j, pop
 set pc, pop
-:dev_find_loop
+:boot_dev_find_loop
 hwq j
 ife b, 0x7349
 ife a, 0xf615	;Screen
@@ -35,23 +43,114 @@ ife a, 0x24c5	;Floppy Drive
 ife j, i
 	set pc, pop
 add j, 1
-set pc, dev_find_loop
+set pc, boot_dev_find_loop
 
-:screen_init	;init desplay
+:boot_screen_init	;init desplay
 set push, a
 set push, b
 set a, 0
-set b, [screen_loc]
+set b, boot_stats_text
 hwi [dev_screen]
-set a, 1
-set b, sys_font
-hwi [dev_screen]
-set a, 2
-set b, sys_colour
-hwi [dev_screen]
-jsr border_colour
-set [colour_text], 0x7000
 set b, pop
+set a, pop
+set pc, pop
+
+
+:boot_stats
+set push, a
+set push, c
+set push, i
+set i, 0
+set a, 1 ;for keyboard
+ife [boot_stats_text], 0x704D
+	set pc, boot_stats_loop2
+
+:boot_stats_loop
+ife i, 0x100 ;8 lines
+	set pc, boot_stats_loop2_start
+bor [boot_stats_text+i], 0x7000
+add i, 1
+set pc, boot_stats_loop
+
+:boot_stats_loop2_start
+set push, x
+set push, y
+jsr boot_stats_scr
+jsr boot_stats_key
+jsr boot_stats_clock
+jsr boot_stats_vec
+jsr boot_stats_fdd
+set y, pop
+set x, pop
+set j, 0
+:boot_stats_loop2
+add j, 1
+hwi [dev_keyboard]
+ife c, 0
+ifl j, 0xA000
+	set pc, boot_stats_loop2
+set i, pop
+set c, pop
+set a, pop
+set pc, pop
+
+:boot_stats_text
+dat "         MMDANGGG2 BIOS         "
+dat "Hardware Devices:               "
+dat "Screen: "
+:boot_stats_text_scr dat 0x0C20, "                       "
+dat "Keyboard: "
+:boot_stats_text_key dat 0x0C20, "                     "
+dat "Clock: "
+:boot_stats_text_clk dat 0x0C20, "                        "
+dat "Vector: "
+:boot_stats_text_vec dat 0x0C20, "                       "
+dat "FDD: "
+:boot_stats_text_fdd dat 0x0C20, "                          "
+dat "Wait / press any key to continue"
+
+:boot_stats_scr
+set x, boot_stats_text_scr
+set y, dev_screen
+jsr boot_stats_check
+set pc, pop
+
+:boot_stats_key
+set x, boot_stats_text_key
+set y, dev_keyboard
+jsr boot_stats_check
+set pc, pop
+
+:boot_stats_clock
+set x, boot_stats_text_clk
+set y, dev_clock
+jsr boot_stats_check
+set pc, pop
+
+:boot_stats_vec
+set x, boot_stats_text_vec
+set y, dev_vector
+jsr boot_stats_check
+set pc, pop
+
+:boot_stats_fdd
+set x, boot_stats_text_fdd
+set y, dev_fdd
+jsr boot_stats_check
+set pc, pop
+
+:boot_stats_check
+set [x], 0x0C20
+ife [y], 0xffff
+	set pc, pop
+set push, a
+set [x], 0xF200
+set a, [y]
+ifg a, 0x9
+	add a, 0x37
+ifl a, 0xA
+	add a, 0x30
+bor [x], a
 set a, pop
 set pc, pop
 

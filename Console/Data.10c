@@ -1,10 +1,3 @@
-;-----	Device IDs	-----
-:dev_screen dat 0xffff
-:dev_keyboard dat 0xffff
-:dev_clock dat 0xffff
-:dev_vector dat 0xffff
-:dev_fdd dat 0xffff
-
 ;-----	Variables	-----
 :screen_loc dat 0x8000
 :colour_text dat 0x7000
