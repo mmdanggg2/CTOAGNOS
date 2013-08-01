@@ -126,7 +126,7 @@ set push, i
 set push, z
 set push, y
 set i, [screen_loc]
-set z, 0x120
+set z, 0x180
 set y, 0
 jsr fill_mem
 set y, pop
