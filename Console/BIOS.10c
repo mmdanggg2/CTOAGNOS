@@ -49,7 +49,7 @@ set pc, boot_dev_find_loop
 set push, a
 set push, b
 set a, 0
-set b, boot_stats_text
+set b, boot_stats_text-64
 hwi [dev_screen]
 set b, pop
 set a, pop
@@ -60,6 +60,7 @@ set pc, pop
 set push, a
 set push, c
 set push, i
+set push, j
 set i, 0
 set a, 1 ;for keyboard
 ife [boot_stats_text], 0x704D
@@ -87,8 +88,9 @@ set j, 0
 add j, 1
 hwi [dev_keyboard]
 ife c, 0
-ifl j, 0xA000
+ifl j, 0xD000
 	set pc, boot_stats_loop2
+set j, pop
 set i, pop
 set c, pop
 set a, pop

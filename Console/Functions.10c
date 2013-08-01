@@ -50,21 +50,10 @@ set push, i
 set push, j
 set i, 0x0000
 set j, [screen_loc]
-;set [j], [j+0x0020]
 :scroll_up_loop
-set [j], [j+0x0020]
-set [j+0x0001], [j+0x0021]
-set [j+0x0002], [j+0x0022]
-set [j+0x0003], [j+0x0023]
-set [j+0x0004], [j+0x0024]
-set [j+0x0005], [j+0x0025]
-set [j+0x0006], [j+0x0026]
-set [j+0x0007], [j+0x0027]
-add j, 0x0008
-add i, 0x0008
+sti [j], [j+0x20]
 ifn i, 0x0180
 	set pc, scroll_up_loop
-:scroll_up_end
 set j, pop
 set i, pop
 set pc, pop
@@ -134,22 +123,52 @@ set pc, pop
 ;-----	Clear Screen	-----
 :clear_screen
 set push, i
-set push, j
+set push, z
+set push, y
 set i, [screen_loc]
-set j, i
-add j, 0x0180
-:clear_screen_loop
-set [i], 0x0000
-set [i+0x0001], 0x0000
-set [i+0x0002], 0x0000
-set [i+0x0003], 0x0000
-set [i+0x0004], 0x0000
-set [i+0x0005], 0x0000
-set [i+0x0006], 0x0000
-set [i+0x0007], 0x0000
-add i, 0x0008
-ifn i, j
-	set pc, clear_screen_loop
+set z, 0x120
+set y, 0
+jsr fill_mem
+set y, pop
+set z, pop
+set i, pop
+set pc, pop
+
+
+
+;-----	Fill Memory	-----
+;i = address to fill
+;z = ammount to fill
+;y = filler
+:fill_mem
+set push, i
+set push, j
+set j, 0
+:fill_mem_loop
+sti [i], y
+ifn j, z
+	set pc, fill_mem_loop
+set j, pop
+set i, pop
+set pc, pop
+
+
+
+;-----	Copy Memory	-----
+;i = copy from
+;j = copy to
+;z = ammount to copy
+:copy_mem
+set push, i
+set push, j
+set push, z
+:copy_mem_loop
+sti [j], [i]
+sub z, 1
+ifg z, 0
+	set pc, copy_mem_loop
+:copy_mem_end
+set z, pop
 set j, pop
 set i, pop
 set pc, pop
@@ -315,5 +334,19 @@ set pc, pop
 jsr draw_blank
 set c, 0xffff
 set i, pop
+set a, pop
+set pc, pop
+
+
+
+;-----	Floppy State	-----
+;b = state
+;c = error
+:fdd_status
+set push, a
+set a, 0x0000
+set b, 0x0000
+set c, 0x0000
+hwi [dev_fdd]
 set a, pop
 set pc, pop

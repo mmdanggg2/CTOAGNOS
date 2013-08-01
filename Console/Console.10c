@@ -45,11 +45,17 @@ ifn c, 0x0000	;if input
 set pc, console_loop
 
 :console_new_cmd
-jsr char_next_line
+set push, a
+jsr get_screen_offset
+set a, [char_offset]
+ifn [a], 0
+	jsr char_next_line
+ifn [char_x], [char_x_start]
+	jsr char_next_line
 set [char_x], 0x0000
-set [con_cmd_pos], 0x0000
 jsr console_clear_cmd
 jsr draw_cmd_line
+set a, pop
 set pc, console_loop
 
 ;-- Input Handling --
@@ -66,8 +72,8 @@ ife c, 0x0013
 set pc, console_char	;Other
 
 :console_bksp
-ife [char_x], [char_x_start]
-	set pc, console_loop
+ife [char_x], [char_x_start]	;if nothing to remove
+	set pc, console_loop		;return
 jsr draw_blank
 sub [char_x], 0x0001
 jsr draw_cur
@@ -81,8 +87,8 @@ set pc, console_loop
 
 :console_return
 jsr draw_blank
+jsr char_next_line
 set pc, console_cmd_read
-set pc, console_new_cmd
 
 :console_insert
 set push, a
@@ -94,9 +100,9 @@ set pc, console_loop
 
 :console_delete
 set push, c
-set c, 0x0000
+set c, 0x4D
 jsr draw_char
-jsr char_next
+jsr draw_cur
 set c, pop
 set pc, console_loop
 
@@ -108,12 +114,12 @@ jsr draw_char
 jsr char_next
 ife [char_x], 0x001F
 	set [colour_cur], 0xC000
-jsr console_cmd_in
+jsr console_cmd_inp
 jsr draw_cur
 set [colour_cur], pop
 set pc, console_loop
 
-:console_cmd_in
+:console_cmd_inp
 ife [con_cmd_pos], [con_cmd_len]
 	set pc, pop
 set push, i
@@ -142,17 +148,18 @@ ife z, 0x0001
 	set pc, console_cmd_read_match
 add i, 0x0001
 set pc, console_cmd_read_loop
+
 :console_cmd_read_none
 set b, pop
 set a, pop
 set i, pop
 set push, a
-jsr char_next_line
 set [char_x], 0x0000
 set a, not_cmd
 jsr draw_string
 set a, pop
 set pc, console_new_cmd
+
 :console_cmd_read_match
 set b, pop
 set a, pop
@@ -163,18 +170,15 @@ set pc, [cmd_list_addr+i]
 
 :console_clear_cmd
 set push, i
-set push, j
+set push, z
+set push, y
 set i, con_cmd
-set j, i
-add j, [con_cmd_len]
-:console_clear_cmd_loop
-set [i], 0x0000
-set [i+0x0001], 0x0000
-set [i+0x0002], 0x0000
-add i, 0x0003
-ifn i, j
-	set pc, console_clear_cmd_loop
-set j, pop
+set z, [con_cmd_len]
+set y, 0
+jsr fill_mem
+set [con_cmd_pos], 0
+set y, pop
+set z, pop
 set i, pop
 set pc, pop
 

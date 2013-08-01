@@ -1,6 +1,5 @@
 :program_logo
 set push, a
-jsr char_next_line
 set a, program_logo_info
 jsr draw_string
 set a, 0x0001
