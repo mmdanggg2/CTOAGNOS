@@ -1,14 +1,48 @@
 :test
+set push, a
+set push, b
+set push, c
 set a, enter_test_text
 jsr draw_string
 
-set a, [screen_loc]
-set i, a
-add a, 0x80
-set j, a
-set z, 0x40
-jsr copy_mem
+jsr fdd_status
+set a, [floppy_state_list+b]
+jsr draw_string
+jsr char_next_line
+set a, [floppy_error_list+c]
+ife c, 0xffff
+	set a, [floppy_error_list+0x6]
+jsr draw_string
+set c, pop
+set b, pop
+set a, pop
 set pc, console_new_cmd
 
 :enter_test_text
 dat "--------Entering test!---------", 0x0000
+
+:floppy_state_list dat floppy_state0, floppy_state1, floppy_state2, floppy_state3, 0x0000
+:floppy_state0
+dat "STATE_NO_MEDIA", 0x0000
+:floppy_state1
+dat "STATE_READY", 0x0000
+:floppy_state2
+dat "STATE_READY_WP", 0x0000
+:floppy_state3
+dat "STATE_BUSY", 0x0000
+
+:floppy_error_list dat floppy_error0, floppy_error1, floppy_error2, floppy_error3, floppy_error4, floppy_error5, floppy_errorffff, 0x0000
+:floppy_error0
+dat "ERROR_NONE", 0x0000
+:floppy_error1
+dat "ERROR_BUSY", 0x0000
+:floppy_error2
+dat "ERROR_NO_MEDIA", 0x0000
+:floppy_error3
+dat "ERROR_PROTECTED", 0x0000
+:floppy_error4
+dat "ERROR_EJECT", 0x0000
+:floppy_error5
+dat "ERROR_BAD_SECTOR", 0x0000
+:floppy_errorffff
+dat "ERROR_BROKEN", 0x0000

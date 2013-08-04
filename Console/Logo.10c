@@ -1,5 +1,10 @@
 :program_logo
 set push, a
+set push, c
+set push, x
+set push, y
+set push, j
+set j, 0x0000
 set a, program_logo_info
 jsr draw_string
 set a, 0x0001
@@ -15,11 +20,15 @@ ife j, 0x00a0
 ife j, 0x00a0
 	set j, 0x0000
 hwi [dev_vector]
-;set a, pop
 jsr key_inp
-ife c, 0x006c
-	set pc, console_new_cmd
-set pc, program_logo_spinloop
+ifn c, 0x006c
+	set pc, program_logo_spinloop
+set j, pop
+set y, pop
+set x, pop
+set c, pop
+set a, pop
+set pc, console_new_cmd
 
 :program_logo_model dat 0x7f66, 0x0756, 0x8566, 0x0756, 0x9766, 0x0768, 0x9766, 0x0799
 dat 0x8866, 0x078b, 0x7966, 0x078b, 0x6266, 0x07a2, 0x6266, 0x07c6
