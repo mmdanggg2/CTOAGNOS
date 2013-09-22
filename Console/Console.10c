@@ -1,6 +1,6 @@
 ;-----	Console -----
-:console ;For later inits
-set sp, 0x0000
+:console
+;set sp, 0x0000
 set push, a
 set push, b
 
@@ -21,46 +21,58 @@ set [colour_border], [colour_border_user]
 jsr border_colour
 
 set [char_x_start], 0x0001
-set [con_cmd_pos], 0x0000
 jsr console_clear_cmd
-jsr clear_screen
+jsr clear_screen	;Clear screen
 
 set [char_x], 0x0000
 set [char_y], 0x0000
 set a, intro_text
-jsr draw_string
+jsr draw_string	;Draw intro text
 
 set [char_x], 0x0000
 set [char_y], 0x0001
-jsr draw_cmd_line
+jsr draw_cmd_line	;Draw >
+
+set a, 3
+set b, 0xbeef	;interrupt message = 0xbeef
+hwi [dev_keyboard]	;Make keyboard send interupts
+
+ias console_int_handler	;set interrupt handler
+
+set a, 0
+hwi [dev_keyboard]	;clear keyboard buffer
 
 set b, pop
 set a, pop
-set pc, console_loop
+set pc, console_loop_start
 
+:console_loop_start
+set c, 0x0000
+set [key_char], 0x0000
+ias console_int_handler
+iaq 0x0000
 :console_loop
-jsr key_inp
-ifn c, 0x0000	;if input
+ifn [key_char], 0x0000
 	set pc, console_inp
 set pc, console_loop
 
+:console_int_handler
+jsr key_inp
+rfi 1
+
 :console_new_cmd
-set push, a
-jsr get_screen_offset
-set a, [char_offset]
-ifn [a], 0
-	jsr char_next_line
-ifn [char_x], [char_x_start]
-	jsr char_next_line
+jsr char_next_line
 set [char_x], 0x0000
 jsr console_clear_cmd
 jsr draw_cmd_line
-set a, pop
-set pc, console_loop
+set c, 0
+set pc, console_loop_start
 
 ;-- Input Handling --
 
 :console_inp
+iaq 0x0001
+set c, [key_char]
 ife c, 0x0010
 	set pc, console_bksp	;Backspace
 ife c, 0x0011
@@ -73,7 +85,7 @@ set pc, console_char	;Other
 
 :console_bksp
 ife [char_x], [char_x_start]	;if nothing to remove
-	set pc, console_loop		;return
+	set pc, console_loop_start	;return
 jsr draw_blank
 sub [char_x], 0x0001
 jsr draw_cur
@@ -83,7 +95,7 @@ ifn [con_cmd_pos], 0x0000
 set i, [con_cmd_pos]
 set [con_cmd+i], 0x0000
 set i, pop
-set pc, console_loop
+set pc, console_loop_start
 
 :console_return
 jsr draw_blank
@@ -96,7 +108,7 @@ set a, con_cmd
 jsr draw_string
 jsr draw_cur
 set a, pop
-set pc, console_loop
+set pc, console_loop_start
 
 :console_delete
 set push, c
@@ -104,7 +116,7 @@ set c, 0x4D
 jsr draw_char
 jsr draw_cur
 set c, pop
-set pc, console_loop
+set pc, console_loop_start
 
 ;-- Character Handling --
 
@@ -117,7 +129,8 @@ ife [char_x], 0x001F
 jsr console_cmd_inp
 jsr draw_cur
 set [colour_cur], pop
-set pc, console_loop
+set c, 0
+set pc, console_loop_start
 
 :console_cmd_inp
 ife [con_cmd_pos], [con_cmd_len]
@@ -135,8 +148,6 @@ set pc, pop
 ife [con_cmd_pos], 0x0000
 	set pc, console_new_cmd
 set push, i
-set push, a
-set push, b
 set i, 0x0000
 :console_cmd_read_loop
 ife [cmd_list+i], 0x0000
@@ -150,22 +161,18 @@ add i, 0x0001
 set pc, console_cmd_read_loop
 
 :console_cmd_read_none
-set b, pop
-set a, pop
 set i, pop
-set push, a
 set [char_x], 0x0000
 set a, not_cmd
 jsr draw_string
-set a, pop
 set pc, console_new_cmd
 
 :console_cmd_read_match
-set b, pop
-set a, pop
-set [null], pop
 jsr console_clear_cmd
-set [con_cmd_pos], 0x0000
+set c, 0x0000
+set 0, pop
+iaq 0
+ias 0
 set pc, [cmd_list_addr+i]
 
 :console_clear_cmd

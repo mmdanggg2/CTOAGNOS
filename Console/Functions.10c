@@ -1,6 +1,18 @@
 ;-----	Keyboard Input	-----
 ;-	Output on C
 :key_inp
+ifn a, 0xbeef
+	set pc, key_inp_old
+set push, c
+set push, a
+set a, 0x0001
+hwi [dev_keyboard]
+set a, pop
+set [key_char], c
+set c, pop
+set pc, pop
+
+:key_inp_old
 set push, a
 set a, 0x0001
 hwi [dev_keyboard]
@@ -8,6 +20,8 @@ set a, pop
 ife c, 0x001B
 	set pc, restart
 set pc, pop
+
+:key_char dat 0x0000
 
 
 

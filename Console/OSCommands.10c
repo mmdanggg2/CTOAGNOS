@@ -3,7 +3,7 @@ jsr clear_screen
 set [char_x], 0x0000
 set [char_y], 0x0000
 jsr draw_cmd_line
-set pc, console_loop
+set pc, console_loop_start
 
 
 
