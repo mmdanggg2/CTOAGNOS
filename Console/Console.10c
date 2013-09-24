@@ -58,6 +58,10 @@ set pc, console_loop
 
 :console_int_handler
 jsr key_inp
+set a, [key_char]
+and a, 0x0100
+ife a, 0x0100
+	set [key_char], 0
 rfi 1
 
 :console_new_cmd

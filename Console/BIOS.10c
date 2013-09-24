@@ -40,9 +40,9 @@ ife a, 0xbf3c	;Vector Display
 ife b, 0x4fd5
 ife a, 0x24c5	;Floppy Drive
 	set [dev_fdd], j
+add j, 1
 ife j, i
 	set pc, pop
-add j, 1
 set pc, boot_dev_find_loop
 
 :boot_screen_init	;init desplay
