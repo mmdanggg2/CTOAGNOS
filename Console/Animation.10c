@@ -1,0 +1,55 @@
+:program_anim
+jsr clear_screen
+
+set a, 0
+set b, [screen_loc]
+hwi [dev_screen]
+
+set a, 1
+set b, sys_font ;Set font
+hwi [dev_screen]
+
+set a, 2
+set b, sys_colour ;Set colours
+hwi [dev_screen]
+
+set [char_x], 0
+set [char_x_start], 0
+set [char_y], 0
+
+set push, i
+set i, 0x0000
+:anim_loop
+ife [anim_list+i], 0
+	set pc, anim_end
+set a, [anim_list+i]
+set [colour_text], [a]
+add a, 1
+jsr draw_string
+jsr char_next_line
+add i, 0x0001
+set pc, anim_loop
+:anim_end
+set i, pop
+
+set [colour_text], 0x4780
+set a, warp_text1
+set [char_x], 9
+set [char_y], 7
+jsr draw_string
+
+set a, warp_text2
+set [char_x], 7
+set [char_y], 8
+jsr draw_string
+
+sub pc, 1
+
+:anim_list dat anim_1, anim_2, anim_3, anim_4, anim_5, 0
+:anim_1 dat 0x7000, ">warp", 0
+:anim_2 dat 0x7000, "Activating Warp Drive...", 0
+:anim_3 dat 0x2000, "Warp Drive Ready!", 0
+:anim_4 dat 0x7000, "Please enter coordinates", 0
+:anim_5 dat 0x7000, ">253, 2113, 6434", 0
+:warp_text1 dat " !WARPING! ", 0
+:warp_text2 dat " 253 2113 6434 ", 0

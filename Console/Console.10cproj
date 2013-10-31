@@ -2,9 +2,9 @@
 <project version="1.7.6" type="code">
   <name>Console</name>
   <properties>
-    <property name="code.generateBinaryOutput">false</property>
+    <property name="code.generateBinaryOutput">True</property>
     <property name="code.binaryOutputFilename">Console.bin</property>
-    <property name="code.generateHexOutput">false</property>
+    <property name="code.generateHexOutput">True</property>
     <property name="code.hexOutputFilename">Console.hex</property>
     <property name="code.setFirstFile">True</property>
     <property name="code.firstFile">BIOS.10c</property>
@@ -21,5 +21,6 @@
     <file path="Calculator.10c" />
     <file path="Logo.10c" />
     <file path="FreeMem.10c" />
+    <file path="Animation.10c" />
   </files>
 </project>

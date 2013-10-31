@@ -7,7 +7,7 @@
         <device type="GenericClock" />
         <device type="GenericKeyboard" />
         <device type="LEM1802" />
-        <device type="SPED-3" />
+        <!--device type="SPED-3" /-->
         <device type="M35FD" />
       </hardware>
       <interface>
@@ -19,6 +19,7 @@
     <property name="emuLoad.projectName">Console</property>
     <property name="emuLoadMode">project</property>
     <property name="setStartupCoreSpeed">False</property>
+    <property name="startupCoreSpeed">100000</property>
   </properties>
   <projects>
     <project path="Console\Console.10cproj" />

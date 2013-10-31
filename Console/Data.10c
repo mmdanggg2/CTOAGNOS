@@ -56,7 +56,7 @@ dat colour_9, colour_a, colour_b, colour_c, colour_d, colour_e, colour_f, 0x0000
 :about4_2 dat "mmdanggg2", 0x0000
 
 ;-----	Commands	-----
-:cmd_list dat cmd_help, cmd_about, cmd_txtcolour, cmd_bordcolour, cmd_clear, cmd_restart, cmd_test, cmd_shutdown, prog_painter, prog_calc, prog_logo, 0x0000
+:cmd_list dat cmd_help, cmd_about, cmd_txtcolour, cmd_bordcolour, cmd_clear, cmd_restart, cmd_test, cmd_shutdown, prog_painter, prog_calc, prog_logo, prog_anim, 0x0000
 :cmd_help dat "help", 0x0000
 :cmd_about dat "about", 0x0000
 :cmd_txtcolour dat "txtcolour", 0x0000
@@ -68,8 +68,9 @@ dat colour_9, colour_a, colour_b, colour_c, colour_d, colour_e, colour_f, 0x0000
 :prog_painter dat "painter", 0x0000
 :prog_calc dat "calc", 0x0000
 :prog_logo dat "logo", 0x0000
+:prog_anim dat "anim", 0x0000
 
-:cmd_list_addr dat help, about, txtcolour, bordcolour, clear, restart, test, shutdown, program_painter, program_calculator, program_logo, 0x0000
+:cmd_list_addr dat help, about, txtcolour, bordcolour, clear, restart, test, shutdown, program_painter, program_calculator, program_logo, program_anim, 0x0000
 
 :null dat 0x0000
 
